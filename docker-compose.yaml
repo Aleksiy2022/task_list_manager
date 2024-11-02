@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  db:
+    container_name: "db"
+    env_file:
+      - .env
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./dbdata:/var/lib/postgresql/data
+      - ./confs/postgresql/my_postgresql.conf:/etc/postgresql/postgresql.conf
+
+  adminer:
+    container_name: "adminer"
+    env_file:
+      - .env
+    image: adminer
+    depends_on:
+      - db
+    restart: always
+    ports:
+      - "8080:8080"
+
+  api:
+    container_name: "api"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./alembic/versions:/alembic/versions
+      - ./api:/api
