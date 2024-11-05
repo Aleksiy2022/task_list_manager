@@ -11,13 +11,13 @@ router = APIRouter(
 )
 
 
-@router.get("/register")
+@router.post("/register")
 async def register_user(
         username: Annotated[str, Form()],
         password: Annotated[str, Form()],
         session: Annotated[AsyncSession, Depends(scoped_session_db)],
 ):
-    password_hash = jwt_utils.hash_password(password=password)
+    password_hash = jwt_utils.hash_password(password=password).decode()
     result = await auth_qr.create_user(
         session=session,
         username=username,

@@ -4,8 +4,7 @@ from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
 from pathlib import Path
 
-BASE_DIR = Path(__file__).parent.parent
-
+BASE_DIR = Path.cwd().resolve()
 load_dotenv()
 
 
