@@ -9,8 +9,11 @@ microblog application.
 
 __all__ = (
     "db_helper",
-    "settings"
+    "settings",
+    "models",
+    "schemas",
 )
 
 from .config import settings
 from api.db.dbhelper import db_helper
+from . import schemas, models

@@ -2,11 +2,19 @@ from typing import Literal
 from pydantic import BaseModel, Field, ConfigDict
 
 
+class TokenInfo(BaseModel):
+    access_token: str
+    token_type: str
+
+
 class UserSchema(BaseModel):
     model_config = ConfigDict(strict=True)
 
     username: str
-    password: bytes
+
+
+class UserInDB(UserSchema):
+    password_hash: bytes
 
 
 class Task(BaseModel):

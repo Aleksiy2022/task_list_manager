@@ -5,9 +5,9 @@ import jwt
 from api import settings
 
 
-def encode_jwt(
+async def encode_jwt(
         payload: dict,
-        private_key: str = settings.auth_jwt.public_key_path.read_text(),
+        private_key: str = settings.auth_jwt.private_key.read_text(),
         algorithm: str = settings.auth_jwt.algorithm,
         expire_minutes: int = settings.auth_jwt.access_token_expire_minutes,
         expire_timedelta: timedelta | None = None,
@@ -31,7 +31,7 @@ def encode_jwt(
     return encoded
 
 
-def decode_jwt(
+async def decode_jwt(
         token: str | bytes,
         public_key: str = settings.auth_jwt.public_key_path.read_text(),
         algorithm: str = settings.auth_jwt.algorithm,
@@ -44,19 +44,22 @@ def decode_jwt(
     return decode
 
 
-def hash_password(
+async def hash_password(
         password: str,
 ) -> bytes:
     salt = bcrypt.gensalt()
-    pwd_bytes: bytes = password.encode()
+    pwd_bytes: bytes = password.encode("utf-8")
     return bcrypt.hashpw(pwd_bytes, salt)
 
 
-def validate_password(
+async def validate_password(
         password: str,
         hashed_password: bytes,
 ) -> bool:
+    print("-----------------------")
+    print("Пришел в валидацию пароля")
+    print("-----------------------")
     return bcrypt.checkpw(
-        password=password.encode(),
+        password=password.encode("utf-8"),
         hashed_password=hashed_password,
     )

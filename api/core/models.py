@@ -50,7 +50,7 @@ class User(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(nullable=False, unique=True)
-    password_hash: Mapped[str] = mapped_column(nullable=False)
+    password_hash: Mapped[bytes] = mapped_column(nullable=False)
     tasks: Mapped[List["Task"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
 
