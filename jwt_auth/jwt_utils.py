@@ -56,9 +56,6 @@ async def validate_password(
         password: str,
         hashed_password: bytes,
 ) -> bool:
-    print("-----------------------")
-    print("Пришел в валидацию пароля")
-    print("-----------------------")
     return bcrypt.checkpw(
         password=password.encode("utf-8"),
         hashed_password=hashed_password,
