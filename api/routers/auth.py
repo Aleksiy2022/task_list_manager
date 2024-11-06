@@ -5,6 +5,7 @@ from api.dependencies import scoped_session_db, validate_auth_user
 from api.db import user_qr
 from api.core import schemas
 from jwt_auth import jwt_utils
+from .auth_helpers import create_access_token, create_refresh_token
 
 
 router = APIRouter(
@@ -25,23 +26,32 @@ async def register_user(
             username=username,
             password_hash=password_hash
     ):
-        return {"result": "Invalid data"}
+        return {"Invalid data"}
     else:
-        return {"result": f"Hello, {username.capitalize()}!"}
+        return {f"Hello, {username.capitalize()}!"}
 
 
 @router.post("/login", response_model=schemas.TokenInfo)
 async def login_user(
         user: schemas.UserSchema = Depends(validate_auth_user),
 ):
-    jwt_payload = {
-        "sub": user.username,
-        "username": user.username,
-    }
-    acceess_token = await jwt_utils.encode_jwt(
-        payload=jwt_payload
-    )
+    access_token = await create_access_token(user)
+    refresh_token = await create_refresh_token(user)
     return schemas.TokenInfo(
-        access_token=acceess_token,
-        token_type="Bearer"
+        access_token=access_token,
+        refresh_token=refresh_token,
+    )
+
+
+@router.post(
+    "/refresh",
+    response_model=schemas.TokenInfo,
+    response_model_exclude_none=True,
+)
+async def refresh_jwt(
+    user: schemas.UserSchema = Depends(validate_auth_user),
+):
+    access_token = await create_access_token(user)
+    return schemas.TokenInfo(
+        access_token=access_token,
     )

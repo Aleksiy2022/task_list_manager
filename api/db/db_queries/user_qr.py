@@ -18,10 +18,19 @@ async def create_user(
     return True if user.id else False
 
 
+async def get_user_by_id(
+        session: AsyncSession,
+        id: int,
+) -> User | None:
+    stmt = select(User).where(User.id == id)
+    user = await session.scalar(stmt)
+    return user
+
+
 async def get_user_by_username(
         session: AsyncSession,
-        username: str
-) -> User | bool:
+        username: str,
+) -> User | None:
     stmt = select(User).where(User.username == username)
     user = await session.scalar(stmt)
     return user

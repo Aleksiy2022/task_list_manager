@@ -1,6 +1,7 @@
 from typing import Annotated, AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession
 from api.db.dbhelper import db_helper
+from api.core import settings
 from jwt.exceptions import InvalidTokenError
 from jwt_auth import jwt_utils
 from fastapi import Form, HTTPException, status, Depends
@@ -61,14 +62,27 @@ async def get_current_token_payload(
     return payload
 
 
-async def get_current_auth_user(
-        payload: Annotated[dict, Depends(get_current_token_payload)],
-        session: Annotated[AsyncSession, Depends(scoped_session_db)],
+async def validate_token_type(
+        payload: dict,
+        token_type: str,
+) -> bool:
+    current_token_type_field = payload.get(settings.auth_jwt.TOKEN_TIPE_FIELD)
+    if current_token_type_field == token_type:
+        return True
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail=f"Invalid token type {current_token_type_field!r} expected {token_type!r}.",
+    )
+
+
+async def get_user_by_token_sub(
+        payload: dict,
+        session: AsyncSession,
 ):
-    username: str = payload.get("username")
-    user = await user_qr.get_user_by_username(
+    user_id: int = payload.get("sub")
+    user = await user_qr.get_user_by_id(
         session=session,
-        username=username
+        id=user_id,
     )
     if not user:
         raise HTTPException(
@@ -76,3 +90,25 @@ async def get_current_auth_user(
             detail="Invalid token",
         )
     return user
+
+
+async def get_current_auth_user(
+        payload: Annotated[dict, Depends(get_current_token_payload)],
+        session: Annotated[AsyncSession, Depends(scoped_session_db)],
+):
+    await validate_token_type(payload, settings.auth_jwt.ACCESS_TOKEN_TYPE)
+    return await get_user_by_token_sub(
+        payload=payload,
+        session=session,
+    )
+
+
+async def get_current_auth_user_for_refresh(
+        payload: Annotated[dict, Depends(get_current_token_payload)],
+        session: Annotated[AsyncSession, Depends(scoped_session_db)],
+):
+    await validate_token_type(payload, settings.auth_jwt.REFRESH_TOKEN_TYPE)
+    return await get_user_by_token_sub(
+        payload=payload,
+        session=session,
+    )
