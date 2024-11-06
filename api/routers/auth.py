@@ -1,7 +1,11 @@
 from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, Form
-from api.dependencies import scoped_session_db, validate_auth_user
+from api.dependencies import (
+    scoped_session_db,
+    validate_auth_user,
+    get_current_auth_user_for_refresh,
+)
 from api.db import user_qr
 from api.core import schemas
 from jwt_auth import jwt_utils
@@ -49,7 +53,7 @@ async def login_user(
     response_model_exclude_none=True,
 )
 async def refresh_jwt(
-    user: schemas.UserSchema = Depends(validate_auth_user),
+    user: schemas.UserSchema = Depends(get_current_auth_user_for_refresh),
 ):
     access_token = await create_access_token(user)
     return schemas.TokenInfo(

@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from api.core.models import User
+from api.core import schemas
 from sqlalchemy import select
 
 
@@ -21,7 +22,7 @@ async def create_user(
 async def get_user_by_id(
         session: AsyncSession,
         id: int,
-) -> User | None:
+) -> schemas.UserSchema | None:
     stmt = select(User).where(User.id == id)
     user = await session.scalar(stmt)
     return user
