@@ -48,15 +48,14 @@ async def validate_auth_user(
 async def get_current_token_payload(
         token: Annotated[str, Depends(oauth2_scheme)]
 ):
-
     try:
-        payload = jwt_utils.decode_jwt(
+        payload = await jwt_utils.decode_jwt(
             token=token,
         )
-    except InvalidTokenError as e:
+    except InvalidTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
+            detail="Invalid token",
             headers={"WWW-Authenticate": "Bearer"},
         )
     return payload
@@ -66,7 +65,7 @@ async def get_current_auth_user(
         payload: Annotated[dict, Depends(get_current_token_payload)],
         session: Annotated[AsyncSession, Depends(scoped_session_db)],
 ):
-    username: str = payload.get("sub")
+    username: str = payload.get("username")
     user = await user_qr.get_user_by_username(
         session=session,
         username=username
@@ -74,6 +73,6 @@ async def get_current_auth_user(
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="token invalid (user not found)",
+            detail="Invalid token",
         )
     return user
