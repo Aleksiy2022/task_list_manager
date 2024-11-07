@@ -102,7 +102,7 @@ class UserGetterFromToken:
         session: AsyncSession = Depends(scoped_session_db),
     ):
         await validate_token_type(payload, self.token_type)
-        return get_user_by_token_sub(
+        return await get_user_by_token_sub(
             payload=payload,
             session=session
         )

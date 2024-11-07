@@ -1,6 +1,10 @@
 from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import APIRouter, Depends, Form
+from fastapi import (
+    APIRouter,
+    Depends,
+    Form,
+)
 from api.dependencies import (
     scoped_session_db,
     validate_auth_user,
@@ -55,6 +59,9 @@ async def login_user(
 async def refresh_jwt(
     user: schemas.UserSchema = Depends(get_current_auth_user_for_refresh),
 ):
+    print("----------------------")
+    print(user)
+    print("----------------------")
     access_token = await create_access_token(user)
     return schemas.TokenInfo(
         access_token=access_token,
