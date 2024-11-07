@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Literal
 from pydantic import BaseModel, Field, ConfigDict
 
@@ -19,7 +20,22 @@ class UserInDB(UserSchema):
     password_hash: bytes
 
 
-class Task(BaseModel):
+class TaskCreate(BaseModel):
     title: str = Field(max_length=50)
     description: str = Field(max_length=500)
     status: Literal["completed", "in_progress"] = "in_progress"
+
+
+class TaskStatus(str, Enum):
+    in_progress = "in_progress"
+    completed = "completed"
+
+
+class Task(BaseModel):
+    title: str
+    description: str
+    status: str
+
+
+class TasksResponse(BaseModel):
+    tasks: list[Task]

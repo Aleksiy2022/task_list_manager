@@ -4,24 +4,6 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
-class TaskStatus(enum.Enum):
-    """
-    TaskStatus is an enumeration class (Enum)
-    used to represent the status of a task.
-    It defines two possible states:
-
-    Attributes
-    ----------
-    COMPLETED: str.
-        Indicates the task is completed.
-    IN_PROGRESS: str.
-        Indicates the task is in progress.
-    """
-
-    COMPLETED: str = "completed"
-    IN_PROGRESS: str = "in_progress"
-
-
 class Base(DeclarativeBase):
     """
     An abstract base class for all declarative models.
@@ -81,6 +63,6 @@ class Task(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
-    status: Mapped[TaskStatus] = mapped_column(default=TaskStatus.IN_PROGRESS)
+    status: Mapped[str] = mapped_column(nullable=False)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship(back_populates="tasks")
