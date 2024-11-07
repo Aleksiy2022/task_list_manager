@@ -26,6 +26,12 @@ class TaskCreate(BaseModel):
     status: Literal["completed", "in_progress"] = "in_progress"
 
 
+class TaskUpdate(BaseModel):
+    title: str | None = Field(max_length=50)
+    description: str | None = Field(max_length=500)
+    status: Literal["completed", "in_progress"] = "in_progress"
+
+
 class TaskStatus(str, Enum):
     in_progress = "in_progress"
     completed = "completed"
