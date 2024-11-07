@@ -7,6 +7,8 @@ from jwt_auth import jwt_utils
 from fastapi import Form, HTTPException, status, Depends
 from api.db import user_qr
 from fastapi.security import OAuth2PasswordBearer
+from api.redis_client import redis
+
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/api/v1/auth/login/",
@@ -19,6 +21,10 @@ async def scoped_session_db() -> AsyncGenerator[AsyncSession, None]:
         yield session
     finally:
         await session.close()
+
+
+async def get_redis():
+    return redis
 
 
 async def validate_auth_user(

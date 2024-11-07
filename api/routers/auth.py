@@ -59,9 +59,6 @@ async def login_user(
 async def refresh_jwt(
     user: schemas.UserSchema = Depends(get_current_auth_user_for_refresh),
 ):
-    print("----------------------")
-    print(user)
-    print("----------------------")
     access_token = await create_access_token(user)
     return schemas.TokenInfo(
         access_token=access_token,
