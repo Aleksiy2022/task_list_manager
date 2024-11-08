@@ -14,15 +14,17 @@ class DataBaseHelper:
 
     Attributes
     ----------
-    engine : sqlalchemy.ext.asyncio.AsyncEngine
-        The asynchronous database engine created based on the provided URL.
-    session_factory : sqlalchemy.ext.asyncio.async_sessionmaker
+    engine : AsyncEngine
+        The asynchronous database engine created based on the
+        provided URL.
+    session_factory : async_sessionmaker
         The factory for creating asynchronous sessions.
 
     Methods
     -------
     init(self, url: str, echo: bool = False)
-        Initializes an instance of DatabaseHelper with the specified parameters.
+        Initializes an instance of DatabaseHelper with the specified
+        parameters.
     get_scoped_session(self)
         Returns a new managed session associated with the current task.
     """
@@ -45,7 +47,7 @@ class DataBaseHelper:
 
         Returns
         -------
-        sqlalchemy.ext.asyncio.async_scoped_session
+        async_scoped_session
             The managed session.
         """
         return async_scoped_session(

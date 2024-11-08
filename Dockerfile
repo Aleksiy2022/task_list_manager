@@ -4,7 +4,6 @@ COPY api api
 COPY pyproject.toml poetry.lock ./
 COPY alembic alembic
 COPY alembic.ini alembic.ini
-COPY jwt_auth jwt_auth
 COPY certs certs
 
 RUN pip install --upgrade pip  \
