@@ -8,8 +8,6 @@ Components of the package.
 3. The 'jwt_utils' contains functions for encoding and decoding jwt.
 """
 
-__all__ = (
-    "router",
-)
+__all__ = ("router",)
 
 from .auth import router

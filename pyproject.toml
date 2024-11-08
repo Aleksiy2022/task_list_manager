@@ -17,6 +17,8 @@ alembic = "^1.13.3"
 pyjwt = {extras = ["crypto"], version = "^2.9.0"}
 bcrypt = "^4.2.0"
 aioredis = "2.0.0"
+black = "^24.10.0"
+isort = "^5.13.2"
 
 
 [build-system]

@@ -1,7 +1,8 @@
 import os
-from pydantic_settings import BaseSettings
-from dotenv import load_dotenv
 from pathlib import Path
+
+from dotenv import load_dotenv
+from pydantic_settings import BaseSettings
 
 BASE_DIR = Path.cwd().resolve()
 load_dotenv()
@@ -38,14 +39,13 @@ class DbSettings(BaseSettings):
     To properly use this class, it is necessary to set the environment
     variables DB_USERNAME, DB_PASSWORD, and DB_NAME before using it.
     """
+
     username: str = os.environ.get("DB_USERNAME")
     password: str = os.environ.get("DB_PASSWORD")
     host: str = "db"
     port: str = "5432"
     name: str = os.environ.get("DB_NAME")
-    url: str = (
-        f"postgresql+asyncpg://{username}:{password}@db:{port}/{name}"
-    )
+    url: str = f"postgresql+asyncpg://{username}:{password}@db:{port}/{name}"
 
 
 class RedisSettings(BaseSettings):
@@ -82,6 +82,7 @@ class RedisSettings(BaseSettings):
     - REDIS_USER
     - REDIS_USER_PASSWORD
     """
+
     redis_password: str = os.environ.get("REDIS_PASSWORD")
     username: str = os.environ.get("REDIS_USER")
     password: str = os.environ.get("REDIS_USER_PASSWORD")
@@ -126,6 +127,7 @@ class AuthJWT(BaseSettings):
     public key files are correct and that the keys are appropriately
     generated and stored in the specified paths.
     """
+
     private_key: Path = BASE_DIR / "certs" / "jwt-private.pem"
     public_key_path: Path = BASE_DIR / "certs" / "jwt-public.pem"
     algorithm: str = "RS256"
@@ -161,6 +163,7 @@ class Settings(BaseSettings):
     This class combines these settings to facilitate centralized
     management and access to application-level configurations.
     """
+
     auth_jwt: AuthJWT = AuthJWT()
     db_settings: DbSettings = DbSettings()
     redis_settings: RedisSettings = RedisSettings()

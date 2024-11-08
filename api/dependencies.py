@@ -1,18 +1,18 @@
 from typing import Annotated, AsyncGenerator
+
+from aioredis import Redis
+from fastapi import Depends, Form, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from jwt.exceptions import InvalidTokenError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 import api.routers.auth.auth
 import api.routers.auth.auth_helpers
-from api.db.dbhelper import db_helper
-from api.core import settings, schemas
-from jwt.exceptions import InvalidTokenError
-from api.routers.auth import jwt_utils
-from fastapi import Form, HTTPException, status, Depends
+from api.core import schemas, settings
 from api.db import user_qr
-from fastapi.security import OAuth2PasswordBearer
+from api.db.dbhelper import db_helper
 from api.redis_client import redis
-from aioredis import Redis
-
+from api.routers.auth import jwt_utils
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/api/v1/auth/login/",
@@ -47,9 +47,9 @@ async def get_redis() -> Redis:
 
 
 async def validate_auth_user(
-        username: Annotated[str, Form()],
-        password: Annotated[str, Form()],
-        session: Annotated[AsyncSession, Depends(scoped_session_db)]
+    username: Annotated[str, Form()],
+    password: Annotated[str, Form()],
+    session: Annotated[AsyncSession, Depends(scoped_session_db)],
 ):
     """
     Validate user authentication credentials.
@@ -80,24 +80,18 @@ async def validate_auth_user(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid username or password",
     )
-    user = await user_qr.get_user_by_username(
-        session=session,
-        username=username
-    )
+    user = await user_qr.get_user_by_username(session=session, username=username)
     if not user:
         raise unauthed_exp
     if await api.routers.auth.auth_helpers.validate_password(
-            password=password,
-            hashed_password=user.password_hash
+        password=password, hashed_password=user.password_hash
     ):
         return user
 
     raise unauthed_exp
 
 
-async def get_current_token_payload(
-        token: Annotated[str, Depends(oauth2_scheme)]
-):
+async def get_current_token_payload(token: Annotated[str, Depends(oauth2_scheme)]):
     """
     Extract and validate the payload from a JWT token.
 
@@ -130,8 +124,8 @@ async def get_current_token_payload(
 
 
 async def validate_token_type(
-        payload: dict,
-        token_type: str,
+    payload: dict,
+    token_type: str,
 ) -> bool:
     """
     Validate the type of given token against an expected token type.
@@ -166,8 +160,8 @@ async def validate_token_type(
 
 
 async def get_user_by_token_sub(
-        payload: dict,
-        session: AsyncSession,
+    payload: dict,
+    session: AsyncSession,
 ) -> schemas.UserSchema:
     """
     Retrieve a user from the database based on the 'sub' claim
@@ -217,6 +211,7 @@ class UserGetterFromToken:
     token_type : str
         The expected type of the token (e.g., 'access', 'refresh').
     """
+
     def __init__(self, token_type: str):
         """
         Initializes the UserGetterFromToken with a specified token type.
@@ -254,11 +249,10 @@ class UserGetterFromToken:
 
         """
         await validate_token_type(payload, self.token_type)
-        return await get_user_by_token_sub(
-            payload=payload,
-            session=session
-        )
+        return await get_user_by_token_sub(payload=payload, session=session)
 
 
 get_current_auth_user = UserGetterFromToken(settings.auth_jwt.ACCESS_TOKEN_TYPE)
-get_current_auth_user_for_refresh = UserGetterFromToken(settings.auth_jwt.REFRESH_TOKEN_TYPE)
+get_current_auth_user_for_refresh = UserGetterFromToken(
+    settings.auth_jwt.REFRESH_TOKEN_TYPE
+)

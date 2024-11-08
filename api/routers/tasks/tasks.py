@@ -1,21 +1,12 @@
 from typing import Annotated
 
-from fastapi import (
-    APIRouter,
-    Form,
-    Depends,
-    Response,
-    status,
-    Query, HTTPException,
-)
+from fastapi import (APIRouter, Depends, Form, HTTPException, Query, Response,
+                     status)
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.dependencies import (
-    get_current_auth_user,
-    scoped_session_db,
-)
 from api.core import schemas
 from api.db import tasks_qr
+from api.dependencies import get_current_auth_user, scoped_session_db
 
 router = APIRouter(
     prefix="/api/v1/tasks",
@@ -25,9 +16,9 @@ router = APIRouter(
 
 @router.post("/")
 async def create_task(
-        task: Annotated[schemas.TaskCreate, Form()],
-        user: Annotated[schemas.UserSchema, Depends(get_current_auth_user)],
-        session: Annotated[AsyncSession, Depends(scoped_session_db)],
+    task: Annotated[schemas.TaskCreate, Form()],
+    user: Annotated[schemas.UserSchema, Depends(get_current_auth_user)],
+    session: Annotated[AsyncSession, Depends(scoped_session_db)],
 ):
     """
     Create a new task associated with the current authenticated user.
@@ -88,24 +79,18 @@ async def get_tasks(
         status=status_filter,
     )
     task_response = [
-        {
-            "title": task.title,
-            "description": task.description,
-            "status": task.status
-        }
+        {"title": task.title, "description": task.description, "status": task.status}
         for task in tasks
     ]
-    return {
-        "tasks": task_response
-    }
+    return {"tasks": task_response}
 
 
 @router.put("/id", response_model=schemas.Task)
 async def update_task(
-        id: Annotated[int, Query()],
-        task: Annotated[schemas.TaskUpdate, Form()],
-        user: Annotated[schemas.UserSchema, Depends(get_current_auth_user)],
-        session: Annotated[AsyncSession, Depends(scoped_session_db)],
+    id: Annotated[int, Query()],
+    task: Annotated[schemas.TaskUpdate, Form()],
+    user: Annotated[schemas.UserSchema, Depends(get_current_auth_user)],
+    session: Annotated[AsyncSession, Depends(scoped_session_db)],
 ):
     """
 
@@ -127,18 +112,16 @@ async def update_task(
         The updated task object that reflects the changes made.
     """
     updated_task = await tasks_qr.update_task(
-        task_id=id,
-        update_data=task,
-        session=session
+        task_id=id, update_data=task, session=session
     )
     return updated_task
 
 
 @router.delete("/id")
 async def delete_task(
-        id: Annotated[int, Query()],
-        user: Annotated[schemas.UserSchema, Depends(get_current_auth_user)],
-        session: Annotated[AsyncSession, Depends(scoped_session_db)],
+    id: Annotated[int, Query()],
+    user: Annotated[schemas.UserSchema, Depends(get_current_auth_user)],
+    session: Annotated[AsyncSession, Depends(scoped_session_db)],
 ):
     """
 
@@ -158,9 +141,9 @@ async def delete_task(
         of the specified task.
     """
     result = await tasks_qr.delete_task(
-            session=session,
-            task_id=id,
-        )
+        session=session,
+        task_id=id,
+    )
     if not result:
         raise HTTPException(status_code=404, detail=f"Task with id: {id} not found.")
     return {"message": f"Task with id: {id} successfully deleted"}

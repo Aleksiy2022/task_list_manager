@@ -1,14 +1,15 @@
+from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
-from api.core.models import Task
+
 from api.core import schemas
-from sqlalchemy import select
+from api.core.models import Task
 
 
 async def create_task(
-        session: AsyncSession,
-        user_id: int,
-        task_data: schemas.TaskCreate,
+    session: AsyncSession,
+    user_id: int,
+    task_data: schemas.TaskCreate,
 ) -> bool:
     """
     Create a new task in the database.
@@ -43,8 +44,8 @@ async def create_task(
 
 
 async def get_tasks(
-        session: AsyncSession,
-        status: str,
+    session: AsyncSession,
+    status: str,
 ) -> list[schemas.Task]:
     """
     Retrieve a list of tasks from the database based on their status.
@@ -69,9 +70,7 @@ async def get_tasks(
 
 
 async def update_task(
-        session: AsyncSession,
-        task_id: int,
-        update_data: schemas.TaskUpdate
+    session: AsyncSession, task_id: int, update_data: schemas.TaskUpdate
 ):
     """
     Update a task in the database with the provided
@@ -116,8 +115,8 @@ async def update_task(
 
 
 async def delete_task(
-        session: AsyncSession,
-        task_id: int,
+    session: AsyncSession,
+    task_id: int,
 ) -> bool:
     """
     Delete a task from the database with the specified task ID.

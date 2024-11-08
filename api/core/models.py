@@ -1,4 +1,5 @@
 from typing import List
+
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -32,7 +33,9 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(nullable=False, unique=True)
     password_hash: Mapped[bytes] = mapped_column(nullable=False)
-    tasks: Mapped[List["Task"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    tasks: Mapped[List["Task"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
 
 
 class Task(Base):
@@ -57,6 +60,7 @@ class Task(Base):
       A relationship attribute that connects the task to the user
       it belongs to.
     """
+
     __tablename__ = "tasks"
 
     id: Mapped[int] = mapped_column(primary_key=True)

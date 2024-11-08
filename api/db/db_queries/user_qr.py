@@ -1,13 +1,14 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from api.core.models import User
-from api.core import schemas
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from api.core import schemas
+from api.core.models import User
 
 
 async def create_user(
-        session: AsyncSession,
-        username: str,
-        password_hash: bytes,
+    session: AsyncSession,
+    username: str,
+    password_hash: bytes,
 ) -> bool:
     """
     Create a new user in the database with the specified username
@@ -39,8 +40,8 @@ async def create_user(
 
 
 async def get_user_by_id(
-        session: AsyncSession,
-        id: int,
+    session: AsyncSession,
+    id: int,
 ) -> schemas.UserSchema | None:
     """
     Retrieve a user from the database by their unique user ID.
@@ -62,8 +63,8 @@ async def get_user_by_id(
 
 
 async def get_user_by_username(
-        session: AsyncSession,
-        username: str,
+    session: AsyncSession,
+    username: str,
 ) -> schemas.UserSchema | None:
     """
     Retrieve a user from the database by their username.

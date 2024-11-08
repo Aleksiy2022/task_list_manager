@@ -12,4 +12,4 @@ __all__ = (
     "tasks_qr",
 )
 
-from .db_queries import user_qr, tasks_qr
+from .db_queries import tasks_qr, user_qr

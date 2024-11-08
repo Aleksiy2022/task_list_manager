@@ -17,6 +17,7 @@ __all__ = (
     "schemas",
 )
 
-from .config import settings
 from api.db.dbhelper import db_helper
-from . import schemas, models
+
+from . import models, schemas
+from .config import settings

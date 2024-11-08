@@ -1,8 +1,9 @@
-from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
-from fastapi.security import HTTPBearer
 from fastapi.responses import JSONResponse
+from fastapi.security import HTTPBearer
+
 from .routers import auth, tasks
 
 http_bearer = HTTPBearer(auto_error=False)

@@ -1,25 +1,17 @@
+from datetime import timedelta
 from typing import Annotated
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import IntegrityError
-from fastapi import (
-    APIRouter,
-    Depends,
-    Form,
-    HTTPException,
-    status,
-)
-from api.dependencies import (
-    scoped_session_db,
-    validate_auth_user,
-    get_current_auth_user_for_refresh,
-    get_redis,
-)
-from datetime import timedelta
 from aioredis import Redis
-from api.db import user_qr
+from fastapi import APIRouter, Depends, Form, HTTPException, status
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from api.core import schemas, settings
-from api.routers.auth.auth_helpers import create_access_token, create_refresh_token, hash_password
+from api.db import user_qr
+from api.dependencies import (get_current_auth_user_for_refresh, get_redis,
+                              scoped_session_db, validate_auth_user)
+from api.routers.auth.auth_helpers import (create_access_token,
+                                           create_refresh_token, hash_password)
 
 router = APIRouter(
     prefix="/api/v1/auth",
@@ -29,8 +21,8 @@ router = APIRouter(
 
 @router.post("/register")
 async def register_user(
-        user: Annotated[schemas.UserCreate, Form()],
-        session: Annotated[AsyncSession, Depends(scoped_session_db)],
+    user: Annotated[schemas.UserCreate, Form()],
+    session: Annotated[AsyncSession, Depends(scoped_session_db)],
 ):
     """
     Register a new user.
@@ -55,9 +47,7 @@ async def register_user(
     password_hash = await hash_password(password=user.password)
     try:
         await user_qr.create_user(
-                session=session,
-                username=user.username,
-                password_hash=password_hash
+            session=session, username=user.username, password_hash=password_hash
         )
     except IntegrityError:
         raise HTTPException(
@@ -65,7 +55,7 @@ async def register_user(
             detail=(
                 f"User with username: {user.username} already exists. "
                 f"Try another one username."
-            )
+            ),
         )
     else:
         return {f"Hello, {user.username.capitalize()}!"}
@@ -73,8 +63,8 @@ async def register_user(
 
 @router.post("/login", response_model=schemas.TokenInfo)
 async def login_user(
-        redis: Annotated[Redis, Depends(get_redis)],
-        user: schemas.UserSchema = Depends(validate_auth_user),
+    redis: Annotated[Redis, Depends(get_redis)],
+    user: schemas.UserSchema = Depends(validate_auth_user),
 ):
     """
     Log in a user and create access and refresh tokens.
@@ -114,8 +104,8 @@ async def login_user(
     response_model_exclude_none=True,
 )
 async def refresh_jwt(
-        redis: Annotated[Redis, Depends(get_redis)],
-        user: Annotated[schemas.UserSchema, Depends(get_current_auth_user_for_refresh)],
+    redis: Annotated[Redis, Depends(get_redis)],
+    user: Annotated[schemas.UserSchema, Depends(get_current_auth_user_for_refresh)],
 ):
     """
     Refresh the JSON Web Token (JWT) for an authenticated user.

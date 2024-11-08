@@ -1,7 +1,8 @@
+import re
 from enum import Enum
 from typing import Literal
-from pydantic import BaseModel, Field, ConfigDict, field_validator
-import re
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class TokenInfo(BaseModel):
@@ -21,19 +22,21 @@ class UserCreate(BaseModel):
     username: str = Field(max_length=50)
     password: str = Field(min_length=8, max_length=16)
 
-    @field_validator('password', mode='after')
+    @field_validator("password", mode="after")
     @classmethod
     def validate_password(
-            cls,
-            password: str,
+        cls,
+        password: str,
     ):
         if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
-            raise ValueError("The password must contain at least one special character.")
+            raise ValueError(
+                "The password must contain at least one special character."
+            )
 
-        if not re.search(r'[A-Z]', password):
+        if not re.search(r"[A-Z]", password):
             raise ValueError("The password must contain at least one capital letter.")
 
-        if not re.search(r'[a-z]', password):
+        if not re.search(r"[a-z]", password):
             raise ValueError("The password must contain at least one lowercase letter.")
         return password
 

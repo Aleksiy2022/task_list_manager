@@ -1,15 +1,16 @@
-from datetime import timedelta, datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import jwt
+
 from api import settings
 
 
 async def encode_jwt(
-        payload: dict,
-        private_key: str = settings.auth_jwt.private_key.read_text(),
-        algorithm: str = settings.auth_jwt.algorithm,
-        expire_minutes: int = settings.auth_jwt.access_token_expire_minutes,
-        expire_timedelta: timedelta | None = None,
+    payload: dict,
+    private_key: str = settings.auth_jwt.private_key.read_text(),
+    algorithm: str = settings.auth_jwt.algorithm,
+    expire_minutes: int = settings.auth_jwt.access_token_expire_minutes,
+    expire_timedelta: timedelta | None = None,
 ) -> str:
     """
     Encode a JSON Web Token (JWT) using a given payload and private key.
@@ -52,9 +53,9 @@ async def encode_jwt(
 
 
 async def decode_jwt(
-        token: str | bytes,
-        public_key: str = settings.auth_jwt.public_key_path.read_text(),
-        algorithm: str = settings.auth_jwt.algorithm,
+    token: str | bytes,
+    public_key: str = settings.auth_jwt.public_key_path.read_text(),
+    algorithm: str = settings.auth_jwt.algorithm,
 ) -> dict:
     """
     Decode a JSON Web Token (JWT) using a specified public key and algorithm.

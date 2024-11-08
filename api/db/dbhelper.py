@@ -1,6 +1,7 @@
 from asyncio import current_task
 
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, async_scoped_session
+from sqlalchemy.ext.asyncio import (async_scoped_session, async_sessionmaker,
+                                    create_async_engine)
 
 from api.core.config import settings
 
@@ -56,6 +57,4 @@ class DataBaseHelper:
         )
 
 
-db_helper = DataBaseHelper(
-    url=settings.db_settings.url
-)
+db_helper = DataBaseHelper(url=settings.db_settings.url)

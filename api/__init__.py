@@ -18,8 +18,6 @@ Components of the package:
 6. The 'redis_client' contains connecting to Redis.
 """
 
-__all__ = (
-    "settings"
-)
+__all__ = "settings"
 
 from .core import settings

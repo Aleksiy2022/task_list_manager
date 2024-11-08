@@ -6,8 +6,6 @@ Components of the package.
     requests with the 'task' prefix.
 """
 
-__all__ = (
-    "router",
-)
+__all__ = ("router",)
 
 from .tasks import router

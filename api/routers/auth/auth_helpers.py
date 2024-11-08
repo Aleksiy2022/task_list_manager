@@ -1,16 +1,17 @@
+from datetime import timedelta
+
 import bcrypt
 
-from api.routers.auth.jwt_utils import encode_jwt
 from api.core import schemas
 from api.core.config import settings
-from datetime import timedelta
+from api.routers.auth.jwt_utils import encode_jwt
 
 
 async def create_jwt(
-        token_type: str,
-        token_data: dict,
-        expire_minutes: int = settings.auth_jwt.access_token_expire_minutes,
-        expire_timedelta: timedelta | None = None
+    token_type: str,
+    token_data: dict,
+    expire_minutes: int = settings.auth_jwt.access_token_expire_minutes,
+    expire_timedelta: timedelta | None = None,
 ) -> str:
     """
     Create a JSON Web Token (JWT) with the specified type and data.
@@ -43,7 +44,7 @@ async def create_jwt(
     return await encode_jwt(
         payload=jwt_payload,
         expire_minutes=expire_minutes,
-        expire_timedelta=expire_timedelta
+        expire_timedelta=expire_timedelta,
     )
 
 
@@ -92,12 +93,12 @@ async def create_refresh_token(user: schemas.UserSchema):
     return await create_jwt(
         token_type=settings.auth_jwt.REFRESH_TOKEN_TYPE,
         token_data=jwt_payload,
-        expire_timedelta=timedelta(days=settings.auth_jwt.refresh_token_expire_days)
+        expire_timedelta=timedelta(days=settings.auth_jwt.refresh_token_expire_days),
     )
 
 
 async def hash_password(
-        password: str,
+    password: str,
 ) -> bytes:
     salt = bcrypt.gensalt()
     pwd_bytes: bytes = password.encode("utf-8")
@@ -105,8 +106,8 @@ async def hash_password(
 
 
 async def validate_password(
-        password: str,
-        hashed_password: bytes,
+    password: str,
+    hashed_password: bytes,
 ) -> bool:
     return bcrypt.checkpw(
         password=password.encode("utf-8"),
